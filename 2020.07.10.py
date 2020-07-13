@@ -75,23 +75,25 @@ def ring_stack(element_count):
     """brute force ring stack solution"""
     # Don't try to run past 8 rings
 
+    empty = "_"
+
     def subroutine(lst):
         """filter invalid rings"""
         
         for index, el in enumerate(lst):
-            if el is not None:
+            if el != empty:
                 
                 # eg a 1-diameter ring in the 2-spot
                 if el < index: 
                     return False
                 
                 # eg a 3 should fall to the 3-spot unless it's blocked
-                if el > index and lst[index+1] is None: 
+                if el > index and lst[index+1] == empty:
                     return False
 
         return True
                     
-    elements = list(range(element_count)) + [None] * (element_count - 1) # rings plus empty slots
+    elements = list(range(element_count)) + [empty] * (element_count - 1) # rings plus empty slots
     combinations = itertools.combinations(elements, element_count) # all possible combinations of rings / empty slots
 
     permutations = []
@@ -100,15 +102,30 @@ def ring_stack(element_count):
 
     return [e for e in set(permutations) if subroutine(e)]
 
+
+def numerical(n):
+
+    return sum([i ** (n-i+1) for i in range(1, n+1)])
+        
+
+
     
 def main():
 
-    for e in express([2,3,3,4], 24):
-        print(format_express(*e))
+    #for e in express([2,3,3,4], 24):
+    #    print(format_express(*e))
 
-    for e in range(1, 8): 
-        print(len(ring_stack(e)))
+    #for e in range(1, 8): 
+    #    print(len(ring_stack(e)))
+
+    #for e in range(2, 9):
+    #    print(len([l for l in ring_stack(e) if l.count("_") == 3]))
+
+    for e in range(10):
+        print(numerical(e))
 
 
 if __name__ == "__main__":
     main()
+
+    
