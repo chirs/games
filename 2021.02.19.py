@@ -79,7 +79,6 @@ def play_game():
             return i
 
 
-
 def main():
 
     games = 10000000
