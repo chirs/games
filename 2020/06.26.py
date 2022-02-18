@@ -34,14 +34,6 @@ def q2():
     return probability
 
 
-
-def monte_carlo():
-    pass
-
-
-
-
-
 def classic():
     pass
 
