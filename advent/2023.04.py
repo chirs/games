@@ -1,3 +1,6 @@
+import collections
+import itertools
+
 '''
 --- Day 4: Scratchcards ---
 The gondola takes you up. Strangely, though, the ground doesn't seem to be coming with you; you're not climbing a mountain. As the circle of Snow Island recedes below you, an entire new landmass suddenly appears above you! The gondola carries you to the surface of the new island and lurches into the station.
@@ -69,40 +72,86 @@ Process all of the original and copied scratchcards until no more scratchcards a
 '''
 
 
-
-def score_card(my_numbers, winning_numbers):
-    score = 0
-
-    for number in my_numbers:
-        if number in winning_numbers:
-            if score == 0:
-                score = 1
-            else:
-                score *= 2
-
-    return score
-
-
+def process_card_text():
+    lines = open('2023.04.input').read().split('\n')
+    cards = [parse_line(line) for line in lines]
+    return cards
 
 def parse_line(line):
-    data = line.split(':', 1)[1]
-    winning_number_text, my_number_text = data.split('|')
+    """
+    Parse a line such as
+    Card   1: 82 15 37 75 85 51 99 18 17  2 |  8 17 54 14 18 99  4 85 51 49 91 15 82 24 75 25 69 61 52 58 37 87  2 22 28
+    and return 
+    (1, [82, 15...], [8, 17...])
+    """
+
+    card_number = int(line[4:].split(':')[0]) 
+    
+    number_data = line.split(':', 1)[1]
+    winning_number_text, my_number_text = number_data.split('|')
     winning_numbers = set([int(e) for e in winning_number_text.split(' ') if e.strip()])
     my_numbers = [int(e) for e in my_number_text.split(' ') if e.strip()]
 
-    return score_card(my_numbers, winning_numbers)
+    return (card_number, (my_numbers, winning_numbers))
+    
 
 
+CARD_DICT = dict(process_card_text())
+
+create_card = lambda n: Card(n, CARD_DICT[n][0], CARD_DICT[n][1])
+
+
+class Card(object):
+
+    def __init__(self, number, my_numbers, winning_numbers):
+        self.number = number
+
+        self.my_numbers = sorted(list(my_numbers))
+        self.winning_numbers = set(winning_numbers)
+
+        self.matches = self._matches()
+        self.match_count = len(self.matches)
+
+    def _matches(self):
+        return [e for e in self.my_numbers if e in self.winning_numbers]
+
+    @property
+    def points(self):
+        if self.match_count == 0:
+            return 0
+        else:
+            return 2 ** (self.match_count - 1)
+
+    def cards_won(self):
+        start = self.number + 1
+        stop = self.number + self.match_count + 1
+
+        #if stop > 220:
+        #    stop = 220 # might need to change if different max input...
+
+        cards = [create_card(n) for n in range(start, stop)]
+        return cards
+
+        
 def part1():
-    lines = open('2023.04.input').read().split('\n')
-    scores = [parse_line(line) for line in lines]
-    return sum(scores)
+    return sum([Card('', my_numbers, winning_numbers).points for my_numbers, winning_numbers in CARD_DICT.values()])
 
+
+def part2():
+    print('x')                            
+    unprocessed_cards = [create_card(n) for n in CARD_DICT.keys()]
+    processed_cards = []
+    print('x')                                
+
+    while unprocessed_cards:
+        print(len(unprocessed_cards))
+        card = unprocessed_cards.pop()
+        processed_cards.append(card)
+        unprocessed_cards.extend(card.cards_won())
+
+    return len(processed_cards)
+        
 
 if __name__ == '__main__':
     print(part1())
-    
-    
-                       
-
-
+    print(part2())
