@@ -36,14 +36,31 @@ zoneight234
 letters = set('abcdefghijklmnopqrstuvwxyz')
 
 
-
 def get_input():
     f = open('2023.01.input')
     lines = f.read().strip().split('\n')
     return [e.strip() for e in lines if e.strip()]
 
 
-spelled_out_numerals = [
+
+def extract_number_part(s):
+    numerals = [e for e in s if e not in letters]
+    calibration_value = int(numerals[0] + numerals[-1])
+    return calibration_value
+
+def process_line(s):
+
+    def subprocess(processed_chars, unprocessed_chars):
+        if len(unprocessed_chars) == 0:
+            return processed_chars
+        else:
+            return subprocess(processed_chars, unprocessed_chars)
+
+    #processed_line = subprocess('', s)
+    return extract_number_part(s)
+
+
+NUMERAL_TUPLES = [
     ('one', '1'),
     ('two', '2'),
     ('three', '3'),
@@ -68,13 +85,6 @@ def convert_spelled_out_numerals(s):
     return s[0] + convert_spelled_out_numerals(s[1:])
 
 
-def extract_number_part(s):
-    numerals = [e for e in s if e not in letters]
-    try:
-        calibration_value = int(numerals[0] + numerals[-1])
-    except:
-        import pdb; pdb.set_trace()
-    return calibration_value
 
 
 def part1():
@@ -94,9 +104,6 @@ def test():
 
 
 if __name__ == '__main__':
-    print(sum(part1()))
-    print(sum(part2()))
-    #print(test())
-
-    
+    for line in TEST_DATA.split('\n'):
+        print(process_line(line))    
 
